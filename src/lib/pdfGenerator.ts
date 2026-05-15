@@ -41,7 +41,9 @@ export function buildCertHtml(input: CertPdfInput): string {
   .signature-row { margin-top: 40px; display: flex; align-items: flex-end; gap: 12px; }
   .signature-img { max-height: 80px; max-width: 240px; }
   .signature-line { flex: 1; border-bottom: 1px solid #1f2937; height: 2px; }
-  .date-row { text-align: right; margin-top: 60px; font-size: 13pt; }
+  .date-row { margin-top: 60px; font-size: 14pt; font-weight: bold; }
+  .gap-10 { display: inline-block; width: 10ch; }
+  .gap-2 { display: inline-block; width: 2ch; }
   .attach-title { text-align: center; font-size: 22pt; margin: 0 0 24px; letter-spacing: 6px; }
   .attach-section { margin-bottom: 24px; }
   .attach-label { font-weight: bold; font-size: 13pt; margin-bottom: 8px; color: #374151; }
@@ -83,7 +85,7 @@ export function buildCertHtml(input: CertPdfInput): string {
           : `<span class="signature-line"></span>`}
       </div>
     </div>
-    <div class="date-row">日期：${esc(input.date)}</div>
+    <div class="date-row">中華民國<span class="gap-10"></span>${rocDateHtml(input.date)}</div>
   </div>
 
   <div class="page">
@@ -141,6 +143,16 @@ export function printCert(input: CertPdfInput): void {
 function imgOrPlaceholder(src: string): string {
   if (src) return `<img src="${src}" class="attach-img" alt="attach" />`;
   return `<div class="attach-img" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:11pt;">（未上傳）</div>`;
+}
+
+function rocDateHtml(iso: string): string {
+  const m = iso.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (!m) return esc(iso);
+  const year = parseInt(m[1], 10) - 1911;
+  const month = parseInt(m[2], 10);
+  const day = parseInt(m[3], 10);
+  const g = '<span class="gap-2"></span>';
+  return `${year}${g}年${g}${month}${g}月${g}${day}${g}日`;
 }
 
 function formatAmount(v: string): string {

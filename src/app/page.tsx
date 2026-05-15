@@ -572,8 +572,20 @@ function CertPreview({
         </div>
       </div>
 
-      <div className="text-right mt-10 text-sm text-gray-700">
-        {date && <span>日期：{date}</span>}
+      <div className="mt-10 text-base font-bold">
+        {(() => {
+          const parts = parseRocDate(date);
+          if (!parts) return null;
+          const gap = (ch: number) => (
+            <span className="inline-block" style={{ width: `${ch}ch` }} />
+          );
+          return (
+            <>
+              中華民國{gap(10)}
+              {parts.year}{gap(2)}年{gap(2)}{parts.month}{gap(2)}月{gap(2)}{parts.day}{gap(2)}日
+            </>
+          );
+        })()}
       </div>
 
       <hr className="border-t-2 border-gray-300 my-6" />
@@ -585,6 +597,16 @@ function CertPreview({
       </p>
     </div>
   );
+}
+
+function parseRocDate(iso: string): { year: number; month: number; day: number } | null {
+  const m = iso.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (!m) return null;
+  return {
+    year: parseInt(m[1], 10) - 1911,
+    month: parseInt(m[2], 10),
+    day: parseInt(m[3], 10),
+  };
 }
 
 function Blank({
